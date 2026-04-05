@@ -1,0 +1,37 @@
+{
+  "nodes": [],
+  "edges": [],
+  "nextId": 1,
+  "operations": [
+    {
+      "id": 2,
+      "name": "OP: UPDATED_NAME",
+      "dossier": "Dossier #2024-SHADOW · Active Surveillance Operation",
+      "briefing": "Covert tracking operation targeting identified hostile network entities in Eastern Europe. Focus on signals interception and asset identification.",
+      "incidents": [
+        {
+          "id": 5,
+          "recordId": "SC-00001",
+          "name": "SIGNAL_INTERCEPT_A",
+          "source": "SIGINT Division",
+          "priority": "high",
+          "affiliation": "neutral",
+          "desc": "Radio intercept captured on encrypted channel 7. Partial decryption indicates movement orders.",
+          "timestamp": "2024.10.15 09:12:00",
+          "status": "link",
+          "response": ""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "OP: IRON_GATE_2025",
+      "dossier": "Dossier #2025-IRONGATE · Border Security Intelligence",
+      "briefing": "Border intelligence operation monitoring cross-sector movement of identified hostile entities. Priority: prevent kinetic engagement.",
+      "incidents": []
+    }
+  ],
+  "activeOpId": 2,
+  "nextOpId": 13,
+  "timestamp": "2026-03-22T17:58:49.318Z"
+}

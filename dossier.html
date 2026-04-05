@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>War Monitor Dossier – Intelligence Repository</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-war">
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="nav-icon">📁</div>
+    <span class="nav-title">WAR MONITOR DOSSIER</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">👤 Actor Profiles</a>
+    <a href="campaign.html" class="nav-link">⊞ Campaign Tracker</a>
+    <a href="dossier.html" class="nav-link active">📁 Dossier Repo</a>
+  </div>
+  <div class="nav-right">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search archive..." id="globalSearch">
+    </div>
+    <button class="icon-btn" title="Notifications">🔔</button>
+    <button class="icon-btn avatar-btn" title="Profile">📋</button>
+  </div>
+</nav>
+
+<div class="war-layout">
+  <!-- SIDEBAR -->
+  <div class="war-sidebar">
+    <div class="sidebar-section-label">ARCHIVE STATUS</div>
+    <div class="sidebar-stat-card">
+      <div class="sidebar-stat-label">VERIFIED REPORTS</div>
+      <div class="sidebar-stat-value" id="verifiedCount">14,280</div>
+    </div>
+    <div class="sidebar-stat-card">
+      <div class="sidebar-stat-label">STORAGE LOAD</div>
+      <div class="sidebar-stat-value" id="storageLoad">4.2 TB</div>
+      <div class="sidebar-bar">
+        <div class="sidebar-bar-track"><div class="sidebar-bar-fill" style="width:42%"></div></div>
+        <span class="sidebar-bar-pct">42%</span>
+      </div>
+    </div>
+
+    <div class="nav-section-label">NAVIGATION</div>
+    <div class="sidebar-nav-item active" id="navDossier" onclick="setNav('dossier',this)">
+      <span class="nav-item-icon">📁</span> Dossier Repo
+    </div>
+    <div class="sidebar-nav-item" id="navConflict" onclick="setNav('conflict',this)">
+      <span class="nav-item-icon">🗺</span> Conflict Map
+    </div>
+    <div class="sidebar-nav-item" id="navHistory" onclick="setNav('history',this)">
+      <span class="nav-item-icon">📰</span> Historical Feed
+    </div>
+    <div class="sidebar-nav-item" id="navSignal" onclick="setNav('signal',this)">
+      <span class="nav-item-icon">📡</span> Signal Intel
+    </div>
+
+    <button class="new-submission-btn" id="newSubmissionBtn">
+      📋 NEW SUBMISSION
+    </button>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="war-main" id="warMain">
+    <!-- Injected dynamically by JS -->
+  </div>
+</div>
+
+<!-- ADD FOLDER MODAL -->
+<div class="modal-overlay hidden" id="addFolderModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span>NEW DOSSIER FOLDER</span>
+      <button class="modal-close" id="closeAddFolder">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="field-label">FOLDER NAME *</label>
+      <input type="text" class="modal-input" id="newFolderName" placeholder="e.g. Donbas Region">
+      <label class="field-label">STATUS</label>
+      <select class="modal-input" id="newFolderStatus">
+        <option value="active">Active</option>
+        <option value="review">Under Review</option>
+        <option value="archived">Archived</option>
+      </select>
+      <label class="field-label">INITIAL FILE COUNT</label>
+      <input type="number" class="modal-input" id="newFolderFiles" placeholder="0" min="0">
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn cancel" id="cancelAddFolder">Cancel</button>
+      <button class="modal-btn confirm" id="confirmAddFolder">Create Folder</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD FILE MODAL -->
+<div class="modal-overlay hidden" id="addFileModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span>ADD FILE TO FOLDER</span>
+      <button class="modal-close" id="closeAddFile">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="field-label">FILE NAME *</label>
+      <input type="text" class="modal-input" id="newFileName" placeholder="e.g. Drone_Capture_B35.mp4">
+      <label class="field-label">FILE TYPE</label>
+      <select class="modal-input" id="newFileType">
+        <option value="video">🎬 Video</option>
+        <option value="image">🖼 Image</option>
+        <option value="audio">🎵 Audio</option>
+        <option value="document">📄 Document</option>
+        <option value="data">📊 Data</option>
+      </select>
+      <label class="field-label">FILE SIZE</label>
+      <input type="text" class="modal-input" id="newFileSize" placeholder="e.g. 24.5 MB">
+      <label class="field-label">TAGS (comma separated)</label>
+      <input type="text" class="modal-input" id="newFileTags" placeholder="e.g. aerial, verified">
+      <label class="field-label">NOTES</label>
+      <textarea class="modal-input" id="newFileNotes" rows="2" placeholder="Additional context or notes..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn cancel" id="cancelAddFile">Cancel</button>
+      <button class="modal-btn confirm" id="confirmAddFile">Add File</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW SUBMISSION MODAL -->
+<div class="modal-overlay hidden" id="newSubmissionModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span>NEW SUBMISSION</span>
+      <button class="modal-close" id="closeSubmission">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="field-label">SUBMISSION TITLE *</label>
+      <input type="text" class="modal-input" id="subTitle" placeholder="e.g. Aerial Survey Batch 14">
+      <label class="field-label">TARGET FOLDER</label>
+      <select class="modal-input" id="subFolder"></select>
+      <label class="field-label">CLASSIFICATION</label>
+      <select class="modal-input" id="subClass">
+        <option>CONFIDENTIAL</option>
+        <option>SECRET</option>
+        <option>TOP SECRET</option>
+        <option>UNCLASSIFIED</option>
+      </select>
+      <label class="field-label">DESCRIPTION</label>
+      <textarea class="modal-input" id="subDesc" rows="3" placeholder="Brief description of the submission..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn cancel" id="cancelSubmission">Cancel</button>
+      <button class="modal-btn confirm" id="confirmSubmission">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- FILE VIEWER MODAL -->
+<div class="modal-overlay hidden" id="fileViewerModal">
+  <div class="modal file-viewer-modal">
+    <div class="modal-header">
+      <span id="fileViewerTitle">FILE VIEWER</span>
+      <div style="display:flex;gap:8px;">
+        <button class="modal-btn confirm" id="fileViewerDownload" style="padding:4px 14px;font-size:10px;">⬇ Download</button>
+        <button class="modal-close" id="closeFileViewer">✕</button>
+      </div>
+    </div>
+    <div class="modal-body file-viewer-content" id="fileViewerContent"></div>
+    <div class="modal-footer">
+      <button class="modal-btn cancel" id="cancelFileViewer">Close</button>
+      <button class="modal-btn confirm" id="saveFileNotes">Save Notes</button>
+    </div>
+  </div>
+</div>
+
+<script src="dossier.js"></script>
+</body>
+</html>

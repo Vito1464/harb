@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intelligence Registry – Actor Profiles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-actors">
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="nav-icon">☰</div>
+    <span class="nav-title">INTELLIGENCE REGISTRY</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link active">👤 Actor Profiles</a>
+    <a href="campaign.html" class="nav-link">⊞ Campaign Tracker</a>
+    <a href="dossier.html" class="nav-link">📁 Dossier Repo</a>
+  </div>
+  <div class="nav-right">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search archives..." id="globalSearch">
+    </div>
+    <button class="backup-btn" id="backupBtn" title="Backup & Restore Database">💾</button>
+    <button class="icon-btn" title="Notifications">🔔</button>
+    <button class="icon-btn avatar-btn" title="Profile">👤</button>
+  </div>
+</nav>
+
+<div class="page-layout">
+
+  <!-- ── LEFT: GRAPH CANVAS ── -->
+  <div class="graph-panel">
+    <div class="legend-box">
+      <div class="legend-title">AFFILIATION INDEX</div>
+      <div class="legend-item"><span class="dot allied"></span> Allied Force</div>
+      <div class="legend-item"><span class="dot hostile"></span> Hostile Entity</div>
+      <div class="legend-item"><span class="line-sample"></span> Documented Link</div>
+    </div>
+
+    <div class="graph-toolbar">
+      <button class="tool-btn active" id="toolSelect" title="Select (click again to deselect)">↖ Select</button>
+      <button class="tool-btn" id="toolConnect" title="Draw Connection">⇢ Connect</button>
+      <button class="tool-btn" id="toolAddAllied" title="Add Allied Profile">+ Allied</button>
+      <button class="tool-btn" id="toolAddHostile" title="Add Hostile Profile">+ Hostile</button>
+      <button class="tool-btn danger" id="toolDelete" title="Delete Node">✕ Delete</button>
+    </div>
+
+    <svg id="graphCanvas" width="100%" height="100%">
+      <defs>
+        <clipPath id="clip-circle-template">
+          <circle cx="0" cy="0" r="22"/>
+        </clipPath>
+      </defs>
+      <g id="campaignBgGroup"></g>
+      <g id="edgesGroup"></g>
+      <g id="nodesGroup"></g>
+    </svg>
+
+    <div class="zoom-controls">
+      <button id="zoomIn" class="zoom-btn">+</button>
+      <button id="zoomOut" class="zoom-btn">−</button>
+    </div>
+    <div id="connectHint" class="connect-hint hidden">Click a source node, then a target node. Press ESC to cancel.</div>
+  </div>
+
+  <!-- ── RIGHT: DETAIL PANEL ── -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="no-selection" id="noSelection">
+      <div class="no-sel-icon">👤</div>
+      <div class="no-sel-text">Select an actor node to view details</div>
+      <div class="no-sel-sub">or use the toolbar to add a new profile</div>
+    </div>
+
+    <div id="profileDetail" class="hidden">
+      <div class="badge-row">
+        <div class="secret-badge" id="detailBadge">SECRET // LEVEL 4</div>
+        <div class="badge-actions">
+          <button class="icon-btn sm" title="Print" onclick="window.print()">🖨</button>
+        </div>
+      </div>
+
+      <!-- Photo Upload -->
+      <div class="photo-section">
+        <div class="photo-frame" id="photoFrame" onclick="document.getElementById('photoUpload').click()">
+          <img id="profilePhotoImg" src="" alt="" class="hidden" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">
+          <div id="photoPlaceholder">
+            <div style="font-size:32px;">📷</div>
+            <div style="font-size:10px;font-family:var(--mono);margin-top:4px;">CLICK TO UPLOAD</div>
+          </div>
+        </div>
+        <input type="file" id="photoUpload" accept="image/*" style="display:none">
+        <button class="remove-photo-btn hidden" id="removePhotoBtn" onclick="removePhoto()">✕ Remove Photo</button>
+      </div>
+
+      <!-- Classification / Designation -->
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">CLASSIFICATION</label>
+          <div class="field-value editable" contenteditable="true" id="detailClassification">TACTICAL COMMANDER</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">DESIGNATION</label>
+          <div class="field-value editable" contenteditable="true" id="detailDesignation">"THE ROOK"</div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">FULL NAME</label>
+          <div class="field-value editable" contenteditable="true" id="detailName">M. SOKOLOV</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">AFFILIATION</label>
+          <select class="field-select" id="detailAffiliation">
+            <option value="allied">Allied Force</option>
+            <option value="hostile" selected>Hostile Entity</option>
+            <option value="neutral">Neutral</option>
+            <option value="unknown">Unknown</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ARCHETYPE -->
+      <div class="section-header">ARCHETYPE</div>
+      <div class="archetype-fields">
+        <div class="arch-field-row">
+          <label class="arch-field-label">ARCHETYPE</label>
+          <div class="field-value editable arch-field-input" contenteditable="true" id="archetypeText" placeholder="e.g. Tactical Commander"></div>
+        </div>
+        <div class="arch-field-row">
+          <label class="arch-field-label arch-angel-label">😇 ANGEL</label>
+          <div class="field-value editable arch-field-input" contenteditable="true" id="angelText" placeholder="e.g. Diplomatic liaison, protects civilians"></div>
+        </div>
+        <div class="arch-field-row">
+          <label class="arch-field-label arch-demon-label">😈 DEMON</label>
+          <div class="field-value editable arch-field-input" contenteditable="true" id="demonText" placeholder="e.g. Arms trafficking, coercion"></div>
+        </div>
+      </div>
+
+      <!-- PERSONAL DETAILS -->
+      <div class="section-header">PERSONAL DETAILS</div>
+      <div class="personal-details-grid">
+        <div class="field-group">
+          <label class="field-label">DATE OF BIRTH</label>
+          <div class="field-value editable" contenteditable="true" id="detailDOB">1978-03-14</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">NATIONALITY</label>
+          <div class="field-value editable" contenteditable="true" id="detailNationality">Russian Federation</div>
+        </div>
+        <div class="field-group full-width">
+          <label class="field-label">HOUSE ADDRESS</label>
+          <div class="field-value editable" contenteditable="true" id="detailAddress">14 Kutuzovsky Prospekt, Moscow, Russia</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">PHONE</label>
+          <div class="field-value editable" contenteditable="true" id="detailPhone">+7 495 000-0000</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">EMAIL</label>
+          <div class="field-value editable" contenteditable="true" id="detailEmail">m.sokolov@redacted.ru</div>
+        </div>
+      </div>
+
+      <!-- SOCIAL MEDIA -->
+      <div class="section-header">SOCIAL MEDIA</div>
+      <div class="social-grid">
+        <div class="social-row">
+          <span class="social-icon linkedin">in</span>
+          <div class="field-value editable social-field" contenteditable="true" id="detailLinkedIn">linkedin.com/in/m-sokolov-redacted</div>
+        </div>
+        <div class="social-row">
+          <span class="social-icon instagram">📷</span>
+          <div class="field-value editable social-field" contenteditable="true" id="detailInstagram">@m_sokolov_redacted</div>
+        </div>
+        <div class="social-row">
+          <span class="social-icon facebook">f</span>
+          <div class="field-value editable social-field" contenteditable="true" id="detailFacebook">facebook.com/m.sokolov.redacted</div>
+        </div>
+        <div class="social-row">
+          <span class="social-icon twitter">𝕏</span>
+          <div class="field-value editable social-field" contenteditable="true" id="detailTwitter">@sokolov_redacted</div>
+        </div>
+      </div>
+
+      <!-- CONFIRMED TIES -->
+      <div class="section-header">CONFIRMED TIES</div>
+      <div class="ties-container" id="tiesContainer"></div>
+
+      <!-- ASSOCIATED CAMPAIGNS -->
+      <div class="section-header">ASSOCIATED CAMPAIGNS</div>
+      <div class="campaigns-container" id="campaignsContainer"></div>
+
+      <!-- OPERATIONAL NARRATIVE -->
+      <div class="section-header">OPERATIONAL NARRATIVE</div>
+      <textarea class="narrative-box" id="detailNarrative"></textarea>
+
+      <!-- SURVEILLANCE LOG -->
+      <div class="section-header-row">
+        <div class="section-header" style="margin:0">SURVEILLANCE LOG</div>
+        <button class="add-log-btn" id="addLogBtn">+ Add Entry</button>
+      </div>
+      <div class="surveillance-log" id="surveillanceLog"></div>
+
+      <div class="detail-actions">
+        <button class="action-btn save-btn" id="saveProfileBtn">💾 Save Profile</button>
+        <button class="action-btn del-btn" id="deleteProfileBtn">🗑 Delete Profile</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay hidden" id="addProfileModal">
+  <div class="modal">
+    <div class="modal-header"><span>NEW ACTOR PROFILE</span><button class="modal-close" id="closeAddProfile">✕</button></div>
+    <div class="modal-body">
+      <label class="field-label">DISPLAY NAME *</label>
+      <input type="text" class="modal-input" id="newProfileName" placeholder="e.g. J. SMITH">
+      <label class="field-label">AFFILIATION *</label>
+      <select class="modal-input" id="newProfileAffiliation">
+        <option value="allied">Allied Force</option>
+        <option value="hostile">Hostile Entity</option>
+        <option value="neutral">Neutral</option>
+        <option value="unknown">Unknown</option>
+      </select>
+      <label class="field-label">CLASSIFICATION</label>
+      <input type="text" class="modal-input" id="newProfileClass" placeholder="e.g. FIELD OPERATIVE">
+      <label class="field-label">DESIGNATION</label>
+      <input type="text" class="modal-input" id="newProfileDesig" placeholder='e.g. "GHOST"'>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn cancel" id="cancelAddProfile">Cancel</button>
+      <button class="modal-btn confirm" id="confirmAddProfile">Create Profile</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="addTieModal">
+  <div class="modal">
+    <div class="modal-header"><span>ADD CONFIRMED TIE</span><button class="modal-close" id="closeAddTie">✕</button></div>
+    <div class="modal-body">
+      <label class="field-label">ORGANIZATION / GROUP</label>
+      <input type="text" class="modal-input" id="newTieName" placeholder="e.g. EASTERN BLOC COMMAND">
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn cancel" id="cancelAddTie">Cancel</button>
+      <button class="modal-btn confirm" id="confirmAddTie">Add Tie</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="addCampaignModal">
+  <div class="modal">
+    <div class="modal-header"><span>LINK CAMPAIGN</span><button class="modal-close" id="closeAddCampaign">✕</button></div>
+    <div class="modal-body">
+      <label class="field-label">SELECT FROM OPERATIONS</label>
+      <select class="modal-input" id="campaignOpSelect">
+        <option value="">— Choose an operation —</option>
+      </select>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-align:center;margin:4px 0;">— OR TYPE MANUALLY —</div>
+      <label class="field-label">CAMPAIGN NAME (custom)</label>
+      <input type="text" class="modal-input" id="newCampaignName" placeholder="e.g. OP: IRON_GATE">
+      <label class="field-label">STATUS</label>
+      <select class="modal-input" id="newCampaignStatus">
+        <option value="active">Active</option>
+        <option value="review">Under Review</option>
+        <option value="archived">Archived</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn cancel" id="cancelAddCampaign">Cancel</button>
+      <button class="modal-btn confirm" id="confirmAddCampaign">Link Campaign</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="addLogModal">
+  <div class="modal">
+    <div class="modal-header"><span>NEW SURVEILLANCE ENTRY</span><button class="modal-close" id="closeAddLog">✕</button></div>
+    <div class="modal-body">
+      <label class="field-label">TIMESTAMP / TYPE</label>
+      <input type="text" class="modal-input" id="newLogMeta" placeholder="e.g. 1HR AGO // SIGNAL INTEL">
+      <label class="field-label">TITLE</label>
+      <input type="text" class="modal-input" id="newLogTitle" placeholder="e.g. ASSET MOVEMENT CONFIRMED">
+      <label class="field-label">DESCRIPTION</label>
+      <textarea class="modal-input" id="newLogDesc" rows="3" placeholder="Detailed description..."></textarea>
+      <label class="field-label">TYPE</label>
+      <select class="modal-input" id="newLogType">
+        <option value="signal">Signal Intel (Blue)</option>
+        <option value="field">Field Report (Red)</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn cancel" id="cancelAddLog">Cancel</button>
+      <button class="modal-btn confirm" id="confirmAddLog">Add Entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- BACKUP & RESTORE MODAL -->
+<div class="modal-overlay hidden" id="backupModal">
+  <div class="modal">
+    <div class="modal-header"><span>STRATEGIC DATABASE MANAGEMENT</span><button class="modal-close" id="closeBackup">✕</button></div>
+    <div class="modal-body">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:14px;line-height:1.4;">
+        Manage your local intelligence storage. Export your database as a .JSON file to your computer for backup, or restore a previously saved archive.
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <button class="modal-btn confirm" id="exportBtn" style="width:100%;height:44px;font-size:12px;">📥 EXPORT TO LOCAL DISK (.JSON)</button>
+        <div style="border-top:1px dashed var(--border);padding-top:14px;">
+          <label class="field-label">RESTORE FROM ARCHIVE</label>
+          <input type="file" id="importFile" accept=".json" style="display:none;">
+          <button class="modal-btn" id="triggerImportBtn" style="width:100%;height:44px;font-size:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);margin-top:6px;">📤 IMPORT ARCHIVE FROM DISK</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn cancel" id="cancelBackup">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="actors.js"></script>
+</body>
+</html>

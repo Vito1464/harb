@@ -1,0 +1,154 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "name": "AGENT WHISPER",
+      "affiliation": "allied",
+      "x": 200,
+      "y": 200,
+      "classification": "FIELD OPERATIVE",
+      "designation": "\"WHISPER\"",
+      "archetypeText": "Field Operative",
+      "angelText": "Protects civilians, intelligence liaison",
+      "demonText": "",
+      "photo": "",
+      "dob": "1985-07-22",
+      "nationality": "American",
+      "address": "---",
+      "phone": "---",
+      "email": "---",
+      "linkedin": "---",
+      "instagram": "---",
+      "facebook": "---",
+      "twitter": "---",
+      "ties": [
+        "NORTHERN COMMAND"
+      ],
+      "campaigns": [
+        {
+          "name": "OP: CYBER_VANGUARD_2024",
+          "status": "active"
+        }
+      ],
+      "narrative": "Undercover operative embedded in target network since 2021. Specialises in signals intelligence and counter-surveillance.",
+      "logs": [
+        {
+          "type": "signal",
+          "meta": "6HRS AGO // SIGNAL INTEL",
+          "title": "ASSET CHECK-IN",
+          "desc": "Regular check-in confirmed. Position secure."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "VIPER UNK-01",
+      "affiliation": "hostile",
+      "x": 400,
+      "y": 180,
+      "classification": "UNKNOWN HOSTILE",
+      "designation": "\"VIPER\"",
+      "archetypeText": "Shadow Operative",
+      "angelText": "",
+      "demonText": "Targeted assassinations, network infiltration",
+      "photo": "",
+      "dob": "????",
+      "nationality": "Unknown",
+      "address": "Unknown",
+      "phone": "Unknown",
+      "email": "---",
+      "linkedin": "---",
+      "instagram": "---",
+      "facebook": "---",
+      "twitter": "---",
+      "ties": [
+        "VIPER SYNDICATE"
+      ],
+      "campaigns": [
+        {
+          "name": "OP: SHADOW_TRACE",
+          "status": "review"
+        }
+      ],
+      "narrative": "Unidentified hostile entity affiliated with Viper Syndicate. High threat level. Whereabouts unknown.",
+      "logs": [
+        {
+          "type": "field",
+          "meta": "24HRS AGO // FIELD REPORT",
+          "title": "LAST KNOWN POSITION",
+          "desc": "Spotted near eastern ridge. Lost contact shortly after."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "M. SOKOLOV",
+      "affiliation": "hostile",
+      "x": 300,
+      "y": 360,
+      "classification": "TACTICAL COMMANDER",
+      "designation": "\"THE ROOK\"",
+      "archetypeText": "Tactical Commander",
+      "angelText": "",
+      "demonText": "Arms trafficking, coercion, asymmetric warfare",
+      "photo": "",
+      "dob": "1978-03-14",
+      "nationality": "Russian Federation",
+      "address": "14 Kutuzovsky Prospekt, Moscow, Russia",
+      "phone": "+7 495 000-0000",
+      "email": "m.sokolov@redacted.ru",
+      "linkedin": "linkedin.com/in/m-sokolov-redacted",
+      "instagram": "@m_sokolov_redacted",
+      "facebook": "facebook.com/m.sokolov.redacted",
+      "twitter": "@sokolov_redacted",
+      "ties": [
+        "NORTHERN COMMAND",
+        "INTELLIGENCE DIVISION"
+      ],
+      "campaigns": [
+        {
+          "name": "OP: CYBER_VANGUARD_2024",
+          "status": "active"
+        },
+        {
+          "name": "OP: SHADOW_TRACE",
+          "status": "review"
+        }
+      ],
+      "narrative": "Subject Sokolov has maintained continuous operational status since 2018. Core competency involves high-risk extraction and asymmetrical tactical oversight.",
+      "logs": [
+        {
+          "type": "signal",
+          "meta": "2HRS AGO // SIGNAL INTEL",
+          "title": "SATELLITE CONFIRMATION: DMZ SECTOR 4",
+          "desc": "Visual lock established on primary transit route. Subject traveling with light escort."
+        },
+        {
+          "type": "field",
+          "meta": "14HRS AGO // FIELD REPORT",
+          "title": "DIRECT CONTACT: VIPER RECON",
+          "desc": "Brief engagement reported near eastern ridge line. No casualties reported."
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": 1,
+      "from": 1,
+      "to": 3,
+      "type": "allied"
+    },
+    {
+      "id": 2,
+      "from": 2,
+      "to": 3,
+      "type": "hostile"
+    }
+  ],
+  "nextId": 13,
+  "operations": [],
+  "activeOpId": 1,
+  "nextOpId": 1,
+  "timestamp": "2026-03-22T17:58:23.741Z"
+}
