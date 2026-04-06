@@ -99,14 +99,14 @@ function loadData() {
 
 function saveData() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(operations)); } catch (e) {}
-  fetch('https://jsonblob.com/api/jsonBlob/019d6038-2a7a-732c-b8ee-50e5800a8e94', {
-    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+  fetch('/api/sync?db=campaign', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(operations)
   }).catch(()=>{});
 }
 
 // Global Sync on boot
-fetch('https://jsonblob.com/api/jsonBlob/019d6038-2a7a-732c-b8ee-50e5800a8e94')
+fetch('/api/sync?db=campaign')
   .then(res => res.json())
   .then(data => {
     if(Array.isArray(data) && data.length > 0) {
