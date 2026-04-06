@@ -283,11 +283,32 @@ function renderGraph() {
     frame.setAttribute('x', '-24'); frame.setAttribute('y', '-24');
     frame.setAttribute('width', '48'); frame.setAttribute('height', '48');
     frame.setAttribute('rx', '4'); frame.setAttribute('fill', '#ddd9d0');
-    frame.setAttribute('stroke', nodeColor); frame.setAttribute('stroke-width', isSelected ? '2.5' : '1.5');
-    if (node.affiliation === 'hostile') {
-      frame.setAttribute('stroke-dasharray', '5 4');
+    
+    if (node.affiliation === 'neutral') {
+      frame.setAttribute('stroke', 'none');
+      g.appendChild(frame);
+      
+      const bStroke = isSelected ? '2.5' : '1.5';
+      const pathStr = `
+        M -12 -24 L -20 -24 Q -24 -24 -24 -20 L -24 -12
+        M 12 -24 L 20 -24 Q 24 -24 24 -20 L 24 -12
+        M 12 24 L 20 24 Q 24 24 24 20 L 24 12
+        M -12 24 L -20 24 Q -24 24 -24 20 L -24 12
+      `;
+      const brackets = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      brackets.setAttribute('d', pathStr.trim());
+      brackets.setAttribute('fill', 'none');
+      brackets.setAttribute('stroke', nodeColor);
+      brackets.setAttribute('stroke-width', bStroke);
+      g.appendChild(brackets);
+    } else {
+      frame.setAttribute('stroke', nodeColor); 
+      frame.setAttribute('stroke-width', isSelected ? '2.5' : '1.5');
+      if (node.affiliation === 'hostile') {
+        frame.setAttribute('stroke-dasharray', '5 4');
+      }
+      g.appendChild(frame);
     }
-    g.appendChild(frame);
 
     if (node.photo) {
       let cp = document.getElementById('cp-node-' + node.id);
