@@ -88,11 +88,11 @@
 
       <!-- Photo Upload -->
       <div class="photo-section">
-        <div class="photo-frame" id="photoFrame" onclick="document.getElementById('photoUpload').click()">
+        <div class="photo-frame" id="photoFrame" tabindex="0" onclick="document.getElementById('photoUpload').click()">
           <img id="profilePhotoImg" src="" alt="" class="hidden" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">
           <div id="photoPlaceholder">
             <div style="font-size:32px;">📷</div>
-            <div style="font-size:10px;font-family:var(--mono);margin-top:4px;">CLICK TO UPLOAD</div>
+            <div style="font-size:10px;font-family:var(--mono);margin-top:4px;text-align:center;">CLICK TO UPLOAD<br>OR PASTE IMAGE</div>
           </div>
         </div>
         <input type="file" id="photoUpload" accept="image/*" style="display:none">
@@ -132,15 +132,69 @@
       <div class="archetype-fields">
         <div class="arch-field-row">
           <label class="arch-field-label">ARCHETYPE</label>
-          <div class="field-value editable arch-field-input" contenteditable="true" id="archetypeText" placeholder="e.g. Tactical Commander"></div>
+          <select class="field-select arch-field-input" id="archetypeText">
+            <option value="">— Select —</option>
+            <option value="BRAHMIN BRAHMIN">BRAHMIN BRAHMIN</option>
+            <option value="BRAHMIN WARRIOR">BRAHMIN WARRIOR</option>
+            <option value="BRAHMIN MERCHANT">BRAHMIN MERCHANT</option>
+            <option value="BRAHMIN SHUDRA">BRAHMIN SHUDRA</option>
+            <option value="WARRIOR BRAHMIN">WARRIOR BRAHMIN</option>
+            <option value="WARRIOR WARRIOR">WARRIOR WARRIOR</option>
+            <option value="WARRIOR MERCHANT">WARRIOR MERCHANT</option>
+            <option value="WARRIOR SHUDRA">WARRIOR SHUDRA</option>
+            <option value="MERCHANT BRAHMIN">MERCHANT BRAHMIN</option>
+            <option value="MERCHANT WARRIOR">MERCHANT WARRIOR</option>
+            <option value="MERCHANT MERCHANT">MERCHANT MERCHANT</option>
+            <option value="MERCHANT SHUDRA">MERCHANT SHUDRA</option>
+            <option value="SHUDRA BRAHMIN">SHUDRA BRAHMIN</option>
+            <option value="SHUDRA WARRIOR">SHUDRA WARRIOR</option>
+            <option value="SHUDRA MERCHANT">SHUDRA MERCHANT</option>
+            <option value="SHUDRA SHUDRA">SHUDRA SHUDRA</option>
+          </select>
         </div>
         <div class="arch-field-row">
           <label class="arch-field-label arch-angel-label">😇 ANGEL</label>
-          <div class="field-value editable arch-field-input" contenteditable="true" id="angelText" placeholder="e.g. Diplomatic liaison, protects civilians"></div>
+          <select class="field-select arch-field-input" id="angelText">
+            <option value="">— Select —</option>
+            <option value="BRAHMIN BRAHMIN">BRAHMIN BRAHMIN</option>
+            <option value="BRAHMIN WARRIOR">BRAHMIN WARRIOR</option>
+            <option value="BRAHMIN MERCHANT">BRAHMIN MERCHANT</option>
+            <option value="BRAHMIN SHUDRA">BRAHMIN SHUDRA</option>
+            <option value="WARRIOR BRAHMIN">WARRIOR BRAHMIN</option>
+            <option value="WARRIOR WARRIOR">WARRIOR WARRIOR</option>
+            <option value="WARRIOR MERCHANT">WARRIOR MERCHANT</option>
+            <option value="WARRIOR SHUDRA">WARRIOR SHUDRA</option>
+            <option value="MERCHANT BRAHMIN">MERCHANT BRAHMIN</option>
+            <option value="MERCHANT WARRIOR">MERCHANT WARRIOR</option>
+            <option value="MERCHANT MERCHANT">MERCHANT MERCHANT</option>
+            <option value="MERCHANT SHUDRA">MERCHANT SHUDRA</option>
+            <option value="SHUDRA BRAHMIN">SHUDRA BRAHMIN</option>
+            <option value="SHUDRA WARRIOR">SHUDRA WARRIOR</option>
+            <option value="SHUDRA MERCHANT">SHUDRA MERCHANT</option>
+            <option value="SHUDRA SHUDRA">SHUDRA SHUDRA</option>
+          </select>
         </div>
         <div class="arch-field-row">
           <label class="arch-field-label arch-demon-label">😈 DEMON</label>
-          <div class="field-value editable arch-field-input" contenteditable="true" id="demonText" placeholder="e.g. Arms trafficking, coercion"></div>
+          <select class="field-select arch-field-input" id="demonText">
+            <option value="">— Select —</option>
+            <option value="BRAHMIN BRAHMIN">BRAHMIN BRAHMIN</option>
+            <option value="BRAHMIN WARRIOR">BRAHMIN WARRIOR</option>
+            <option value="BRAHMIN MERCHANT">BRAHMIN MERCHANT</option>
+            <option value="BRAHMIN SHUDRA">BRAHMIN SHUDRA</option>
+            <option value="WARRIOR BRAHMIN">WARRIOR BRAHMIN</option>
+            <option value="WARRIOR WARRIOR">WARRIOR WARRIOR</option>
+            <option value="WARRIOR MERCHANT">WARRIOR MERCHANT</option>
+            <option value="WARRIOR SHUDRA">WARRIOR SHUDRA</option>
+            <option value="MERCHANT BRAHMIN">MERCHANT BRAHMIN</option>
+            <option value="MERCHANT WARRIOR">MERCHANT WARRIOR</option>
+            <option value="MERCHANT MERCHANT">MERCHANT MERCHANT</option>
+            <option value="MERCHANT SHUDRA">MERCHANT SHUDRA</option>
+            <option value="SHUDRA BRAHMIN">SHUDRA BRAHMIN</option>
+            <option value="SHUDRA WARRIOR">SHUDRA WARRIOR</option>
+            <option value="SHUDRA MERCHANT">SHUDRA MERCHANT</option>
+            <option value="SHUDRA SHUDRA">SHUDRA SHUDRA</option>
+          </select>
         </div>
       </div>
 

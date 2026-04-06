@@ -483,9 +483,9 @@ function showDetailPanel(node) {
   document.getElementById('detailNarrative').value = node.narrative;
 
   // Archetype 3 text fields
-  document.getElementById('archetypeText').textContent = node.archetypeText || '';
-  document.getElementById('angelText').textContent = node.angelText || '';
-  document.getElementById('demonText').textContent = node.demonText || '';
+  document.getElementById('archetypeText').value = node.archetypeText || '';
+  document.getElementById('angelText').value = node.angelText || '';
+  document.getElementById('demonText').value = node.demonText || '';
 
   // Ties
   const tiesContainer = document.getElementById('tiesContainer');
@@ -661,6 +661,32 @@ document.getElementById('photoUpload').addEventListener('change', e => {
   e.target.value = '';
 });
 
+// Global Paste image support (if profile is selected, paste goes to photo)
+document.addEventListener('paste', e => {
+  if (!selectedNodeId) return;
+  // Ignore paste if they are typing in an input or contenteditable
+  const active = document.activeElement;
+  if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) return;
+
+  const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+  for (let index in items) {
+    const item = items[index];
+    if (item.kind === 'file' && item.type.startsWith('image/')) {
+      const blob = item.getAsFile();
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const node = nodes.find(n => n.id === selectedNodeId); if (!node) return;
+        node.photo = ev.target.result;
+        saveData(); showDetailPanel(node); renderGraph();
+        showToast('Photo pasted from clipboard', 'success');
+      };
+      reader.readAsDataURL(blob);
+      e.preventDefault();
+      break;
+    }
+  }
+});
+
 window.removePhoto = function() {
   const node = nodes.find(n => n.id === selectedNodeId); if (!node) return;
   node.photo = '';
@@ -678,9 +704,9 @@ document.getElementById('saveProfileBtn').addEventListener('click', () => {
   node.affiliation = document.getElementById('detailAffiliation').value;
 
   // Archetype 3 text fields
-  node.archetypeText = document.getElementById('archetypeText').textContent.trim();
-  node.angelText = document.getElementById('angelText').textContent.trim();
-  node.demonText = document.getElementById('demonText').textContent.trim();
+  node.archetypeText = document.getElementById('archetypeText').value.trim();
+  node.angelText = document.getElementById('angelText').value.trim();
+  node.demonText = document.getElementById('demonText').value.trim();
 
   node.dob = document.getElementById('detailDOB').textContent.trim();
   node.nationality = document.getElementById('detailNationality').textContent.trim();
