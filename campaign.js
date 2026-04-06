@@ -26,39 +26,66 @@ function showToast(msg, type = '') {
 // ── DATA ──
 const defaultOps = [
   {
-    id: 1, name: 'OP: CYBER_VANGUARD_2024',
-    dossier: 'Dossier #2024-VANGUARD · Classified Operational Intelligence',
-    briefing: 'Sustained reconnaissance detected originating from Eastern Sector actors targeting financial infrastructure. Objective: Intelligence gathering on transaction routing. Response posture: Aggressive mitigation and decoy routing active.',
-    incidents: [
-      { id: 1, recordId: 'PV-00124', name: 'PHANTOM_VECTOR', source: 'Volga Cyber Intelligence', priority: 'high', affiliation: 'hostile',
-        desc: 'Type: DDoS (L7) – Volumetric attack targeting edge nodes in Frankfurt region.\nSignature match detected across primary firewall clusters.',
-        timestamp: '2024.10.12 14:32:01', status: 'link', response: '' },
-      { id: 2, recordId: 'BS-00082', name: 'BLUE_SENTRY_01', source: 'Internal SOC Dept', priority: 'internal', affiliation: 'allied',
-        desc: 'Action: Traffic Scrubbing – Initiated cloud-based scrubbing and IP blacklisting for detected vectors. Effective mitigation observed within 120s.',
-        timestamp: '2024.10.12 14:34:15', status: 'validated', response: 'SOC Team Alpha – Mitigation – TICKET-20241012-001' },
-      { id: 3, recordId: 'UK-00041', name: 'UNKNOWN_ENTITY', source: 'Unidentified Group', priority: 'low', affiliation: 'hostile',
-        desc: 'Activity: Port Scanning – Widespread sequential port scanning across development subnets. Origin: Masked via TOR/Relay.',
-        timestamp: '2024.10.12 15:01:00', status: 'link', response: '' },
-      { id: 4, recordId: 'IW-00003', name: 'IRON_WORM', source: 'Crimson Syndicate', priority: 'critical', affiliation: 'hostile',
-        desc: 'Attack: MITM (TLS Bypass) – Man-in-the-middle attempt on remote administration portal. Certificates verified as forged.',
-        timestamp: '2024.10.12 16:44:22', status: 'link', response: '' }
+    "id": 2,
+    "name": "OP: SHADOW_TRACE",
+    "dossier": "Dossier #2024-SHADOW · Active Surveillance Operation",
+    "briefing": "Covert tracking operation targeting identified hostile network entities in Eastern Europe. Focus on signals interception and asset identification.",
+    "incidents": [
+      {
+        "id": 5,
+        "recordId": "SC-00001",
+        "name": "SIGNAL_INTERCEPT_A",
+        "source": "SIGINT Division",
+        "priority": "high",
+        "affiliation": "neutral",
+        "desc": "Radio intercept captured on encrypted channel 7. Partial decryption indicates movement orders.",
+        "timestamp": "2024.10.15 09:12:00",
+        "status": "link",
+        "response": ""
+      }
     ]
   },
   {
-    id: 2, name: 'OP: SHADOW_TRACE',
-    dossier: 'Dossier #2024-SHADOW · Active Surveillance Operation',
-    briefing: 'Covert tracking operation targeting identified hostile network entities in Eastern Europe. Focus on signals interception and asset identification.',
-    incidents: [
-      { id: 5, recordId: 'SC-00001', name: 'SIGNAL_INTERCEPT_A', source: 'SIGINT Division', priority: 'high', affiliation: 'neutral',
-        desc: 'Radio intercept captured on encrypted channel 7. Partial decryption indicates movement orders.',
-        timestamp: '2024.10.15 09:12:00', status: 'link', response: '' }
-    ]
+    "id": 3,
+    "name": "OP: IRON_GATE_2025",
+    "dossier": "Dossier #2025-IRONGATE · Border Security Intelligence",
+    "briefing": "Border intelligence operation monitoring cross-sector movement of identified hostile entities. Priority: prevent kinetic engagement.",
+    "incidents": []
   },
   {
-    id: 3, name: 'OP: IRON_GATE_2025',
-    dossier: 'Dossier #2025-IRONGATE · Border Security Intelligence',
-    briefing: 'Border intelligence operation monitoring cross-sector movement of identified hostile entities. Priority: prevent kinetic engagement.',
-    incidents: []
+    "id": 13,
+    "name": "MUSLIM INFRA",
+    "dossier": "Dossier #NEW · Classified Intelligence",
+    "briefing": "Enemies from the cult islam",
+    "incidents": []
+  },
+  {
+    "id": 14,
+    "name": "START UP FACTIONS",
+    "dossier": "Dossier #NEW · Classified Intelligence",
+    "briefing": "Attempts to undermine the reasonableness of our different business vehicles",
+    "incidents": []
+  },
+  {
+    "id": 15,
+    "name": "OXFORD UNIVERISTY",
+    "dossier": "Dossier #NEW · Classified Intelligence",
+    "briefing": "The fight for the seat of metaphysics in the united kingdom",
+    "incidents": []
+  },
+  {
+    "id": 16,
+    "name": "HEARTH OPERATIONS",
+    "dossier": "Dossier #NEW · Classified Intelligence",
+    "briefing": "Securing the borders of our various properties",
+    "incidents": []
+  },
+  {
+    "id": 17,
+    "name": "BEHIND THE GATES",
+    "dossier": "Dossier #NEW · Classified Intelligence",
+    "briefing": "Plugging the leaks",
+    "incidents": []
   }
 ];
 
