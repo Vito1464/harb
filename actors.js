@@ -647,15 +647,46 @@ function renderLogEntries(node) {
   });
 }
 
+// ── IMAGE COMPRESSION ──
+function compressImage(dataUrl, callback) {
+  const img = new Image();
+  img.onload = () => {
+    const MAX_SIZE = 400; // max width/height
+    let width = img.width;
+    let height = img.height;
+    if (width > height) {
+      if (width > MAX_SIZE) {
+        height *= MAX_SIZE / width;
+        width = MAX_SIZE;
+      }
+    } else {
+      if (height > MAX_SIZE) {
+        width *= MAX_SIZE / height;
+        height = MAX_SIZE;
+      }
+    }
+    const cvs = document.createElement('canvas');
+    cvs.width = width;
+    cvs.height = height;
+    const ctx = cvs.getContext('2d');
+    ctx.drawImage(img, 0, 0, width, height);
+    // Export as highly compressed JPEG
+    callback(cvs.toDataURL('image/jpeg', 0.6));
+  };
+  img.src = dataUrl;
+}
+
 // ── PHOTO UPLOAD ──
 document.getElementById('photoUpload').addEventListener('change', e => {
   const file = e.target.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    const node = nodes.find(n => n.id === selectedNodeId); if (!node) return;
-    node.photo = ev.target.result;
-    saveData(); showDetailPanel(node); renderGraph();
-    showToast('Photo uploaded', 'success');
+    compressImage(ev.target.result, compressedData => {
+      const node = nodes.find(n => n.id === selectedNodeId); if (!node) return;
+      node.photo = compressedData;
+      saveData(); showDetailPanel(node); renderGraph();
+      showToast('Photo uploaded & synced', 'success');
+    });
   };
   reader.readAsDataURL(file);
   e.target.value = '';
@@ -675,10 +706,12 @@ document.addEventListener('paste', e => {
       const blob = item.getAsFile();
       const reader = new FileReader();
       reader.onload = ev => {
-        const node = nodes.find(n => n.id === selectedNodeId); if (!node) return;
-        node.photo = ev.target.result;
-        saveData(); showDetailPanel(node); renderGraph();
-        showToast('Photo pasted from clipboard', 'success');
+        compressImage(ev.target.result, compressedData => {
+          const node = nodes.find(n => n.id === selectedNodeId); if (!node) return;
+          node.photo = compressedData;
+          saveData(); showDetailPanel(node); renderGraph();
+          showToast('Photo pasted & synced', 'success');
+        });
       };
       reader.readAsDataURL(blob);
       e.preventDefault();
