@@ -88,7 +88,27 @@ function loadData() {
 
 function saveData() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ nodes, edges })); } catch (e) {}
+  // Sync to global JSONBlob
+  fetch('https://jsonblob.com/api/jsonBlob/019d6038-22d0-771f-a49c-9956b8edd9f4', {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nodes, edges })
+  }).catch(()=>{});
 }
+
+// Global Sync on boot
+fetch('https://jsonblob.com/api/jsonBlob/019d6038-22d0-771f-a49c-9956b8edd9f4')
+  .then(res => res.json())
+  .then(data => {
+    if(data && data.nodes) {
+      nodes = data.nodes;
+      if(data.edges) edges = data.edges;
+      nextId = Math.max(...nodes.map(n => n.id), 0) + 10;
+      nextEdgeId = Math.max(...edges.map(e => e.id), 0) + 10;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ nodes, edges }));
+      renderGraph();
+      if(typeof renderProfileList === 'function') renderProfileList();
+    }
+  }).catch(()=>{});
 
 function getOperationsFromCampaign() {
   try {

@@ -99,7 +99,29 @@ function loadData() {
 
 function saveData() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(operations)); } catch (e) {}
+  fetch('https://jsonblob.com/api/jsonBlob/019d6038-2a7a-732c-b8ee-50e5800a8e94', {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(operations)
+  }).catch(()=>{});
 }
+
+// Global Sync on boot
+fetch('https://jsonblob.com/api/jsonBlob/019d6038-2a7a-732c-b8ee-50e5800a8e94')
+  .then(res => res.json())
+  .then(data => {
+    if(Array.isArray(data) && data.length > 0) {
+      operations = data;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(operations));
+      nextIncId = Math.max(...operations.flatMap(o => o.incidents.map(i => i.id)), 0) + 10;
+      nextOpId = Math.max(...operations.map(o => o.id), 0) + 10;
+      
+      const exists = operations.find(o => o.id === activeOpId);
+      if(!exists) activeOpId = operations[0].id;
+      
+      renderOpSelect();
+      loadActiveOp();
+    }
+  }).catch(()=>{});
 
 let operations = loadData();
 let activeOpId = operations[0]?.id || 1;
