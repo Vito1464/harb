@@ -95,6 +95,22 @@ function saveData() {
   }).catch(()=>{});
 }
 
+function centerGraph() {
+  if (!nodes || nodes.length === 0) return;
+  const r = canvas.getBoundingClientRect();
+  if (r.width === 0) { setTimeout(centerGraph, 50); return; }
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  nodes.forEach(n => {
+    minX = Math.min(minX, n.x); maxX = Math.max(maxX, n.x);
+    minY = Math.min(minY, n.y); maxY = Math.max(maxY, n.y);
+  });
+  const cx = (minX + maxX) / 2;
+  const cy = (minY + maxY) / 2;
+  panOffset.x = (r.width / 2) - (cx * scale);
+  panOffset.y = (r.height / 2) - (cy * scale);
+  applyTransform();
+}
+
 // Global Sync on boot
 fetch('/api/sync?db=actors')
   .then(res => res.json())
@@ -106,6 +122,7 @@ fetch('/api/sync?db=actors')
       nextEdgeId = Math.max(...edges.map(e => e.id), 0) + 10;
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ nodes, edges }));
       renderGraph();
+      centerGraph();
       if(typeof renderProfileList === 'function') renderProfileList();
     }
   }).catch(()=>{});
@@ -124,6 +141,9 @@ let activeTool = 'select';
 let connectSource = null;
 let dragNode = null;
 let dragOffset = { x: 0, y: 0 };
+let panOffset = { x: 0, y: 0 };
+let isPanning = false;
+let panStart = { x: 0, y: 0 };
 let scale = 1;
 let nextId = Math.max(...nodes.map(n => n.id), 0) + 10;
 let nextEdgeId = Math.max(...edges.map(e => e.id), 0) + 10;
@@ -354,19 +374,42 @@ function onNodeMouseDown(e, node) {
   e.stopPropagation();
   dragNode = node;
   const r = canvas.getBoundingClientRect();
-  dragOffset.x = e.clientX - r.left - node.x;
-  dragOffset.y = e.clientY - r.top - node.y;
+  dragOffset.x = e.clientX - (r.left + panOffset.x + (node.x * scale));
+  dragOffset.y = e.clientY - (r.top + panOffset.y + (node.y * scale));
 }
 
+canvas.addEventListener('mousedown', e => {
+  if (activeTool !== 'select') return;
+  if (e.target.closest('.tool-btn') || e.target.closest('.detail-panel')) return;
+  if (!dragNode) {
+    isPanning = true;
+    panStart = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
+    canvas.style.cursor = 'grabbing';
+  }
+});
 canvas.addEventListener('mousemove', e => {
+  if (isPanning) {
+    panOffset.x = e.clientX - panStart.x;
+    panOffset.y = e.clientY - panStart.y;
+    applyTransform();
+    return;
+  }
   if (!dragNode) return;
   const r = canvas.getBoundingClientRect();
-  dragNode.x = e.clientX - r.left - dragOffset.x;
-  dragNode.y = e.clientY - r.top - dragOffset.y;
+  dragNode.x = (e.clientX - dragOffset.x - r.left - panOffset.x) / scale;
+  dragNode.y = (e.clientY - dragOffset.y - r.top - panOffset.y) / scale;
   renderGraph();
 });
-canvas.addEventListener('mouseup', () => { if (dragNode) { saveData(); dragNode = null; } });
-canvas.addEventListener('click', () => {
+canvas.addEventListener('mouseup', () => { 
+  if (isPanning) { isPanning = false; canvas.style.cursor = 'default'; }
+  if (dragNode) { saveData(); dragNode = null; } 
+});
+canvas.addEventListener('mouseleave', () => { 
+  if (isPanning) { isPanning = false; canvas.style.cursor = 'default'; }
+  if (dragNode) { saveData(); dragNode = null; } 
+});
+canvas.addEventListener('click', e => {
+  if (isPanning) return;
   if (activeTool === 'select') { selectedNodeId = null; showDetailPanel(null); renderGraph(); }
 });
 document.addEventListener('keydown', e => {
@@ -682,8 +725,13 @@ document.getElementById('toolAddHostile').addEventListener('click', () => {
   openModal('addProfileModal');
 });
 
-document.getElementById('zoomIn').addEventListener('click', () => { scale = Math.min(2.5, scale + 0.15); document.getElementById('campaignBgGroup').setAttribute('transform', `scale(${scale})`); nodesGroup.setAttribute('transform', `scale(${scale})`); edgesGroup.setAttribute('transform', `scale(${scale})`); });
-document.getElementById('zoomOut').addEventListener('click', () => { scale = Math.max(0.3, scale - 0.15); document.getElementById('campaignBgGroup').setAttribute('transform', `scale(${scale})`); nodesGroup.setAttribute('transform', `scale(${scale})`); edgesGroup.setAttribute('transform', `scale(${scale})`); });
+function applyTransform() {
+  const mg = document.getElementById('masterGroup');
+  if (mg) mg.setAttribute('transform', `translate(${panOffset.x}, ${panOffset.y}) scale(${scale})`);
+}
+
+document.getElementById('zoomIn').addEventListener('click', () => { scale = Math.min(2.5, scale + 0.15); applyTransform(); });
+document.getElementById('zoomOut').addEventListener('click', () => { scale = Math.max(0.3, scale - 0.15); applyTransform(); });
 
 // ── MODALS ──
 function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
@@ -840,3 +888,4 @@ document.getElementById('importFile').addEventListener('change', e => {
 
 // ── INIT ──
 renderGraph();
+centerGraph();
