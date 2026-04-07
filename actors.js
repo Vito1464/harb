@@ -88,11 +88,6 @@ function loadData() {
 
 function saveData() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ nodes, edges })); } catch (e) {}
-  // Sync to global JSONBlob via Vercel Proxy to avoid CORS
-  fetch('/api/sync?db=actors', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nodes, edges })
-  }).catch(()=>{});
 }
 
 function centerGraph() {
@@ -109,42 +104,6 @@ function centerGraph() {
   panOffset.x = (r.width / 2) - (cx * scale);
   panOffset.y = (r.height / 2) - (cy * scale);
   applyTransform();
-}
-
-// Global Sync on boot
-function fetchCloudData() {
-  fetch('/api/sync?db=actors')
-    .then(res => res.json())
-    .then(data => {
-      if(data && data.nodes) {
-        const cloudStr = JSON.stringify({ nodes: data.nodes, edges: data.edges || [] });
-        const localStr = localStorage.getItem(STORAGE_KEY);
-        
-        // If we don't have local data or cloud is different, sync
-        if(!localStr || (cloudStr !== localStr && !isPanning && !dragNode)) {
-          nodes = data.nodes;
-          if(data.edges) edges = data.edges;
-          nextId = Math.max(...nodes.map(n => n.id), 0) + 10;
-          nextEdgeId = Math.max(...edges.map(e => e.id), 0) + 10;
-          localStorage.setItem(STORAGE_KEY, cloudStr);
-          renderGraph();
-          centerGraph();
-          if(typeof renderProfileList === 'function') renderProfileList();
-        }
-      }
-    }).catch(()=>{});
-}
-
-fetchCloudData();
-// Poll for updates every 30 seconds
-setInterval(fetchCloudData, 30000);
-
-function getOperationsFromCampaign() {
-  try {
-    const data = localStorage.getItem('intel_campaign_data');
-    if (data) return JSON.parse(data);
-  } catch (e) {}
-  return [];
 }
 
 let { nodes, edges } = loadData();

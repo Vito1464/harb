@@ -99,39 +99,7 @@ function loadData() {
 
 function saveData() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(operations)); } catch (e) {}
-  fetch('/api/sync?db=campaign', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(operations)
-  }).catch(()=>{});
 }
-
-// Global Sync on boot
-function fetchCloudData() {
-  fetch('/api/sync?db=campaign')
-    .then(res => res.json())
-    .then(data => {
-      if(Array.isArray(data) && data.length > 0) {
-        const cloudStr = JSON.stringify(data);
-        const localStr = localStorage.getItem(STORAGE_KEY);
-
-        if(!localStr || cloudStr !== localStr) {
-          operations = data;
-          localStorage.setItem(STORAGE_KEY, cloudStr);
-          nextIncId = Math.max(...operations.flatMap(o => o.incidents.map(i => i.id)), 0) + 10;
-          nextOpId = Math.max(...operations.map(o => o.id), 0) + 10;
-          
-          const exists = operations.find(o => o.id === activeOpId);
-          if(!exists) activeOpId = operations[0].id;
-          
-          renderOpSelect();
-          loadActiveOp();
-        }
-      }
-    }).catch(()=>{});
-}
-
-fetchCloudData();
-setInterval(fetchCloudData, 30000);
 
 let operations = loadData();
 let activeOpId = operations[0]?.id || 1;

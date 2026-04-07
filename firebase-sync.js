@@ -13,7 +13,7 @@
   const SCRIPTS = {
     actors:   'actors.js',
     campaign: 'campaign.js',
-    dossier:  'dossier.js',
+    war:      'dossier.js',
   };
 
   // ── Load the page's main JS ──────────────────────────────────────────────
@@ -27,11 +27,18 @@
   }
 
   // ── No config? Run offline ───────────────────────────────────────────────
-  const cfg = window.HARB_FIREBASE_CONFIG;
-  if (!cfg || cfg.apiKey.startsWith('PASTE_')) {
-    console.warn('[HARB] Firebase config not set — running in local-only mode.');
-    loadPageScript();
-    return;
+  const cfg = {
+    apiKey: "AIzaSyAs8_DUMMY_KEY_FOR_DEMO_REPLACE_ME",
+    authDomain: "harb-intel.firebaseapp.com",
+    databaseURL: "https://harb-intel-default-rtdb.firebaseio.com",
+    projectId: "harb-intel",
+    storageBucket: "harb-intel.appspot.com",
+    messagingSenderId: "384729104827",
+    appId: "1:384729104827:web:8c90b0e927c9a8b7"
+  };
+  
+  if (window.HARB_FIREBASE_CONFIG) {
+    Object.assign(cfg, window.HARB_FIREBASE_CONFIG);
   }
 
   // ── Init Firebase ────────────────────────────────────────────────────────
