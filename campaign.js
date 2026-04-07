@@ -106,22 +106,32 @@ function saveData() {
 }
 
 // Global Sync on boot
-fetch('/api/sync?db=campaign')
-  .then(res => res.json())
-  .then(data => {
-    if(Array.isArray(data) && data.length > 0) {
-      operations = data;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(operations));
-      nextIncId = Math.max(...operations.flatMap(o => o.incidents.map(i => i.id)), 0) + 10;
-      nextOpId = Math.max(...operations.map(o => o.id), 0) + 10;
-      
-      const exists = operations.find(o => o.id === activeOpId);
-      if(!exists) activeOpId = operations[0].id;
-      
-      renderOpSelect();
-      loadActiveOp();
-    }
-  }).catch(()=>{});
+function fetchCloudData() {
+  fetch('/api/sync?db=campaign')
+    .then(res => res.json())
+    .then(data => {
+      if(Array.isArray(data) && data.length > 0) {
+        const cloudStr = JSON.stringify(data);
+        const localStr = localStorage.getItem(STORAGE_KEY);
+
+        if(!localStr || cloudStr !== localStr) {
+          operations = data;
+          localStorage.setItem(STORAGE_KEY, cloudStr);
+          nextIncId = Math.max(...operations.flatMap(o => o.incidents.map(i => i.id)), 0) + 10;
+          nextOpId = Math.max(...operations.map(o => o.id), 0) + 10;
+          
+          const exists = operations.find(o => o.id === activeOpId);
+          if(!exists) activeOpId = operations[0].id;
+          
+          renderOpSelect();
+          loadActiveOp();
+        }
+      }
+    }).catch(()=>{});
+}
+
+fetchCloudData();
+setInterval(fetchCloudData, 30000);
 
 let operations = loadData();
 let activeOpId = operations[0]?.id || 1;

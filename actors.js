@@ -112,20 +112,32 @@ function centerGraph() {
 }
 
 // Global Sync on boot
-fetch('/api/sync?db=actors')
-  .then(res => res.json())
-  .then(data => {
-    if(data && data.nodes) {
-      nodes = data.nodes;
-      if(data.edges) edges = data.edges;
-      nextId = Math.max(...nodes.map(n => n.id), 0) + 10;
-      nextEdgeId = Math.max(...edges.map(e => e.id), 0) + 10;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ nodes, edges }));
-      renderGraph();
-      centerGraph();
-      if(typeof renderProfileList === 'function') renderProfileList();
-    }
-  }).catch(()=>{});
+function fetchCloudData() {
+  fetch('/api/sync?db=actors')
+    .then(res => res.json())
+    .then(data => {
+      if(data && data.nodes) {
+        const cloudStr = JSON.stringify({ nodes: data.nodes, edges: data.edges || [] });
+        const localStr = localStorage.getItem(STORAGE_KEY);
+        
+        // If we don't have local data or cloud is different, sync
+        if(!localStr || (cloudStr !== localStr && !isPanning && !dragNode)) {
+          nodes = data.nodes;
+          if(data.edges) edges = data.edges;
+          nextId = Math.max(...nodes.map(n => n.id), 0) + 10;
+          nextEdgeId = Math.max(...edges.map(e => e.id), 0) + 10;
+          localStorage.setItem(STORAGE_KEY, cloudStr);
+          renderGraph();
+          centerGraph();
+          if(typeof renderProfileList === 'function') renderProfileList();
+        }
+      }
+    }).catch(()=>{});
+}
+
+fetchCloudData();
+// Poll for updates every 30 seconds
+setInterval(fetchCloudData, 30000);
 
 function getOperationsFromCampaign() {
   try {
