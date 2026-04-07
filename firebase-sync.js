@@ -46,6 +46,23 @@
   const db       = firebase.database();
   const PAGE_REF = db.ref('harb/' + PAGE);
 
+  function updateSyncStatus(status) {
+    const el = document.getElementById('syncIndicator');
+    if (!el) return;
+    el.className = 'sync-indicator ' + status;
+    el.innerHTML = status === 'online' ? '📡 CLOUD: ONLINE' : 
+                   status === 'syncing' ? '⌛ SYNCING...' : '📡 CLOUD: OFFLINE';
+  }
+
+  // Monitor connection state
+  db.ref(".info/connected").on("value", function(snap) {
+    if (snap.val() === true) {
+      updateSyncStatus('online');
+    } else {
+      updateSyncStatus('offline');
+    }
+  });
+
   // ── Key encoding (Firebase forbids dots, $, #, [, ], /) ──────────────────
   function encodeKey(k) {
     return '_' + btoa(unescape(encodeURIComponent(k))).replace(/=/g, '-');
@@ -64,9 +81,13 @@
       try {
         const patch = {};
         patch[encodeKey(key)] = value;
-        PAGE_REF.update(patch);
+        updateSyncStatus('syncing');
+        PAGE_REF.update(patch).then(() => {
+          updateSyncStatus('online');
+        });
       } catch (e) {
         console.error('[HARB] Firebase write error:', e);
+        updateSyncStatus('offline');
       }
     }
   };
