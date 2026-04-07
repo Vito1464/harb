@@ -58,9 +58,20 @@
     document.body.appendChild(b);
   }
 
-  // Fallback boot
+  // Fallback boot & Seeding
   setTimeout(() => {
     updateStatus('online');
+    
+    // BROADCAST EXISTING LOCAL INTEL TO NO-CONFIG P2P CLOUD
+    if (!window._isSyncing) {
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('intel_') || key.startsWith('activeOp') || key === 'activeOperations') {
+          const val = localStorage.getItem(key);
+          DB.get(key).put({ val: val });
+        }
+      });
+    }
+
     const src = SCRIPTS[PAGE];
     if (src && !document.querySelector(`script[src="${src}"]`)) {
       const s = document.createElement('script');
