@@ -4,7 +4,11 @@
 // ─────────────────────────────────────────────────────────────
 
 (function () {
-  const gun = GUN(['https://gun-manhattan.herokuapp.com/gun']);
+  const gun = GUN([
+    'https://gun-manhattan.herokuapp.com/gun',
+    'https://relay.peer.ooo/gun',
+    'https://peer.wallie.io/gun'
+  ]);
   const PAGE = (document.body.className.match(/page-(\S+)/) || [])[1] || 'index';
   const SCRIPTS = { actors: 'actors.js', campaign: 'campaign.js', war: 'dossier.js' };
   const DB = gun.get('harb_registry_vfinal_ext_' + PAGE);
@@ -32,13 +36,23 @@
   let bootCount = 0;
   DB.map().on((data, key) => {
     if (data && data.val) {
-      if (localStorage.getItem(key) !== data.val) {
+      const localVal = localStorage.getItem(key);
+      if (localVal !== data.val) {
+        
+        // Critical: Check if the client was previously empty on this key
+        const wasEmpty = !localVal;
+
         window._isSyncing = true;
         localStorage.setItem(key, data.val);
         window._isSyncing = false;
         
-        // Show update banner if not the initial boot
-        if (bootCount > 5) showBanner();
+        // Show update banner if not the initial boot, OR automatically reload if bridging a dead instance
+        if (bootCount > 5 && !wasEmpty) {
+            showBanner();
+        } else {
+            console.log('GunJS: Injected core remote artifact [' + key + ']. Refreshing state matrix...');
+            setTimeout(() => location.reload(), 600);
+        }
       }
     }
     bootCount++;
