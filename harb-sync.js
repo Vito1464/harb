@@ -20,39 +20,66 @@
     el.innerHTML = status === 'online' ? '📡 CLOUD: LIVE (P2P)' : '⌛ SYNCING...';
   }
 
+  // Chunking mechanics for Base64 imagery arrays that break GunJS WS limits
+  const CHUNK_LIMIT = 50000; // 50KB chunks
+
+  function putChunked(key, value) {
+    if (!value) return;
+    const totalChunks = Math.ceil(value.length / CHUNK_LIMIT);
+    // Write out the raw chunks asynchronously
+    for (let i = 0; i < totalChunks; i++) {
+      DB.get(key + '_chunk_' + i).put({ val: value.substring(i * CHUNK_LIMIT, (i + 1) * CHUNK_LIMIT) });
+    }
+    // Finalise by writing the meta head to trigger read algorithms
+    DB.get(key + '_meta').put({ chunks: totalChunks, lastUpdate: Date.now() }, ack => {
+      if (!ack.err) updateStatus('online');
+    });
+  }
+
   // Intercept LocalStorage writes
   const _origSet = Storage.prototype.setItem;
   Storage.prototype.setItem = function (key, value) {
     _origSet.call(this, key, value);
     if (this === window.localStorage && !window._isSyncing) {
       updateStatus('syncing');
-      DB.get(key).put({ val: value }, ack => {
-        if (!ack.err) updateStatus('online');
-      });
+      putChunked(key, value);
     }
   };
 
-  // Initial Load & Real-time Listeners
+  // Reconstruct incoming chunked updates natively
   let bootCount = 0;
   DB.map().on((data, key) => {
-    if (data && data.val) {
-      const localVal = localStorage.getItem(key);
-      if (localVal !== data.val) {
-        
-        // Critical: Check if the client was previously empty on this key
-        const wasEmpty = !localVal;
-
-        window._isSyncing = true;
-        localStorage.setItem(key, data.val);
-        window._isSyncing = false;
-        
-        // Show update banner if not the initial boot, OR automatically reload if bridging a dead instance
-        if (bootCount > 5 && !wasEmpty) {
-            showBanner();
-        } else {
-            console.log('GunJS: Injected core remote artifact [' + key + ']. Refreshing state matrix...');
-            setTimeout(() => location.reload(), 600);
-        }
+    // Only subscribe to the meta entry to orchestrate reconstruction
+    if (key.endsWith('_meta') && data && data.chunks) {
+      const baseKey = key.replace('_meta', '');
+      let reconstructed = [];
+      let gathered = 0;
+      const expected = data.chunks;
+      
+      for (let i = 0; i < expected; i++) {
+        DB.get(baseKey + '_chunk_' + i).once(chunkData => {
+           if (chunkData && chunkData.val) {
+             reconstructed[i] = chunkData.val;
+             gathered++;
+             if (gathered === expected) {
+                const fullPayload = reconstructed.join('');
+                const localVal = localStorage.getItem(baseKey);
+                if (localVal !== fullPayload) {
+                    const wasEmpty = !localVal;
+                    window._isSyncing = true;
+                    localStorage.setItem(baseKey, fullPayload);
+                    window._isSyncing = false;
+                    
+                    if (bootCount > 5 && !wasEmpty) {
+                        showBanner();
+                    } else {
+                        console.log('GunJS: Injected heavy payload [' + baseKey + ']. Reloading phase shift...');
+                        setTimeout(() => location.reload(), 600);
+                    }
+                }
+             }
+           }
+        });
       }
     }
     bootCount++;
