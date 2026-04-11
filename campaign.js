@@ -92,7 +92,15 @@ const defaultOps = [
 function loadData() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // INTEL-SYNC: If the local storage matches the OLD generic default state, 
+      // forcibly overwrite it with the newly hardcoded comprehensive backup state
+      if (parsed.length === 2 && parsed[1] && parsed[1].name === 'OP: IRON_GATE_2025') {
+        return JSON.parse(JSON.stringify(defaultOps));
+      }
+      return parsed;
+    }
   } catch (e) {}
   return JSON.parse(JSON.stringify(defaultOps));
 }

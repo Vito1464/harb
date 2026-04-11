@@ -696,6 +696,11 @@ function loadData() {
         angelText: n.angelText || '',
         demonText: n.demonText || ''
       }));
+      // INTEL-SYNC: If the local storage matches the OLD generic default state, 
+      // forcibly overwrite it with the newly hardcoded comprehensive backup state
+      if (parsed.nodes && parsed.nodes.length === 3 && parsed.nodes[0] && parsed.nodes[0].name === 'AGENT WHISPER') {
+        return JSON.parse(JSON.stringify(defaultData));
+      }
       return parsed;
     }
   } catch (e) {}
